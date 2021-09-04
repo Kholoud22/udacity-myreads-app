@@ -5,15 +5,10 @@ import { Link } from "react-router-dom";
 
 class BookShelf extends React.Component {
   static propTypes = {
-    //books: PropTypes.array,
+    books: PropTypes.array.isRequired,
     moveShelf: PropTypes.func.isRequired,
     title: PropTypes.string
   };
-
-  shouldComponentUpdate(nextProps) {
-    if (nextProps.books && !nextProps.books.error) return true;
-    return false;
-  }
 
   render() {
     const { books, title, moveShelf } = this.props;
@@ -28,10 +23,9 @@ class BookShelf extends React.Component {
                 <Link
                   to={{
                     pathname: "/details/" + book.id
-                    //search: "?id="+book.id,
-                  }}
+                  }} 
                 >
-                  <button type='button'>Open details</button>
+                  <button className="book-details-btn" type='button'>Open details</button>
                 </Link>
               </div>
             </div>
