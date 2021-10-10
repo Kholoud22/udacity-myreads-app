@@ -5,23 +5,17 @@ import BookDetails from "./Components/BookDetails";
 import "./App.css";
 import { Route, Switch } from "react-router-dom";
 import BrowsedBooks from "./Components/BrowsedBooks";
-
+import { connect } from "react-redux";
+import { handleInitialData } from "./actions/shared";
+import LoadingBar from "react-redux-loading";
+import { handleUpdateBookShelf } from "./actions/books";
 class BooksApp extends Component {
-  state = {
-    books: []
-  };
-  moveShelf = async (book, shelf) => {
-    await BooksAPI.update(book, shelf);
-    book.shelf = shelf;
-
-    this.setState(state => ({
-      books: state.books.filter(b => b.id !== book.id).concat(book)
-    }));
+  moveShelf = (book, shelf) => {
+    this.props.handleUpdateBookShelf(book, shelf);
   };
 
-  async componentDidMount() {
-    const books = await BooksAPI.getAll();
-    this.setState({ books });
+  componentDidMount() {
+    this.props.handleInitialData();
   }
   render() {
     return (
@@ -31,7 +25,10 @@ class BooksApp extends Component {
             exact
             path='/'
             render={() => (
-              <MyBooks books={this.state.books} moveShelf={this.moveShelf} />
+              <MyBooks
+                books={Object.values(this.props.books)}
+                moveShelf={this.moveShelf}
+              />
             )}
           ></Route>
           <Route
@@ -44,7 +41,7 @@ class BooksApp extends Component {
             path='/search'
             render={() => (
               <BrowsedBooks
-                books={this.state.books}
+                books={this.props.books}
                 moveShelf={this.moveShelf}
               />
             )}
@@ -54,5 +51,16 @@ class BooksApp extends Component {
     );
   }
 }
+const mapStateToProps = ({ books }) => ({
+  books
+});
 
-export default BooksApp;
+const mapDispatchToProps = dispatch => {
+  return {
+    handleInitialData: () => dispatch(handleInitialData()),
+    handleUpdateBookShelf: (book, shelf) =>
+      dispatch(handleUpdateBookShelf(book, shelf))
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(BooksApp);
