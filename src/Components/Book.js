@@ -1,19 +1,32 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { handleUpdateBookShelf } from '../actions/books'
+import { connect } from 'react-redux';
 
 class Book extends React.Component {
   state = {
-    canUpdateShelf: true
+    book:{}
   };
+
   static propTypes = {
     book: PropTypes.object.isRequired,
     canUpdateShelf: PropTypes.bool.isRequired
   };
 
-  moveShelf = (event, book) => this.props.moveShelf(book, event.target.value);
+  componentDidMount(){
+    this.setState({book: this.props.book})
+  }
+
+  moveShelf = (event, book) => {
+    var bookToBeUpdated = {...book};
+    bookToBeUpdated.shelf = event.target.value;
+    this.setState({book: bookToBeUpdated});
+    this.props.handleUpdateBookShelf(book, event.target.value);
+  }
 
   render() {
-    const { book, canUpdateShelf } = this.props;
+    const { book } = this.state;
+    const {canUpdateShelf} = this.props;
     return (
       <li>
         <div className='book'>
@@ -63,4 +76,10 @@ class Book extends React.Component {
   }
 }
 
-export default Book;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    handleUpdateBookShelf: (book, shelf) => dispatch(handleUpdateBookShelf(book,shelf))
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Book)

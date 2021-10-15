@@ -1,10 +1,10 @@
 import React from "react";
-import PropTypes from "prop-types";
 import BookShelf from "./BookShelf";
 import { Link } from "react-router-dom";
+import { connect } from 'react-redux';
 
 const MyBooks = props => {
-  const { moveShelf, books } = props;
+  const { books } = props;
   const shelves = [
     {
       title: "Currently Reading",
@@ -29,9 +29,8 @@ const MyBooks = props => {
           {shelves.map((item, index) => ( 
             <BookShelf
               key={index}
-              books={books.filter(book => book.shelf === item.shelf)}
+              books={Object.values(books).filter(book => book.shelf === item.shelf)}
               title={item.title}
-              moveShelf={moveShelf}
             />
           ))}
         </div>
@@ -44,8 +43,12 @@ const MyBooks = props => {
     </div>
   );
 };
-MyBooks.propTypes = {
-  books: PropTypes.array.isRequired,
-  moveShelf: PropTypes.func.isRequired
-};
-export default MyBooks;
+// MyBooks.propTypes = {
+//   //books: PropTypes.array.isRequired,
+//   moveShelf: PropTypes.func.isRequired
+// };
+const mapStateToProps = ({ books }) => ({
+  books
+})
+
+export default connect(mapStateToProps, null)(MyBooks)

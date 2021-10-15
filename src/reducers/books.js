@@ -2,7 +2,6 @@ import { GET_BOOKS, GET_BOOK, GET_MY_BOOKS, UPDATE_SHELF } from "../actions";
 
 export default function booksReducer(books = {}, action) {
   switch (action.type) {
-    case GET_BOOKS:
     case GET_MY_BOOKS:
       return {
         ...books,
@@ -14,6 +13,11 @@ export default function booksReducer(books = {}, action) {
       return {
         ...books,
         ...book
+      };
+    case GET_BOOKS:
+      return {
+        ...books,
+        ...action.data.browesdBooks
       };
     default:
       return books;

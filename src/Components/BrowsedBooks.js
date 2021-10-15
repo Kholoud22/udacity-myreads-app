@@ -1,57 +1,65 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
 import BookShelf from "./BookShelf";
 import * as BooksAPI from "../BooksAPI";
 import debounce from "lodash.debounce";
-
-class BrowsedBooks extends Component {
+import { handleBrowseBooks } from '../actions/books';
+import { connect } from 'react-redux';
+import { handleInitialData } from '../actions/shared';
+class browesdBooks extends Component {
   state = {
-    books: [],
-    browsedBooks: [],
+    browesdBooks: [],
     query: ""
   };
 
-  static propTypes = {
-    books: PropTypes.array.isRequired,
-    moveShelf: PropTypes.func.isRequired
-  };
+  // static propTypes = {
+  //   //books: PropTypes.array.isRequired,
+  //   //moveShelf: PropTypes.func.isRequired
+  // };
 
-  componentDidMount() {
-    if (window.history.state.browsedBooks) {
-      this.setState({
-        browsedBooks: window.history.state.browsedBooks,
-        query: window.history.state.query
-      });
-      let q = window.history.state.query;
-      document.getElementById("input").value = q;
-    }
-  }
+  //componentDidMount() {
+    // if (window.history.state.browesdBooks) {
+    //   this.setState({
+    //     browesdBooks: window.history.state.browesdBooks,
+    //     query: window.history.state.query
+    //   });
+    //   let q = window.history.state.query;
+    //   document.getElementById("input").value = q;
+    // }
+  //}
 
   browseBooks = debounce(async q => {
-    let browsedBooks = [];
-    let books = this.props.books;
+    let books = Object.values(this.props.books);
+    let browesdBooks = [];
+
     if (q.trim()) {
-      browsedBooks = await BooksAPI.search(q.trim());
-      if (browsedBooks && !browsedBooks.error && browsedBooks.length) {
-        browsedBooks = browsedBooks.map(b => {
-          b.shelf = "none";
-          let bookToBeUpdated = books.filter(book => book.id === b.id)[0];
-          if (bookToBeUpdated) b = bookToBeUpdated;
-          return b;
-        });
-      }
+      browesdBooks = await BooksAPI.search(q.trim());
+      //this.props.handleBrowseBooks(q).then(boks => {
+        //browesdBooks = this.props.browesdBooks;
+        if (browesdBooks && !browesdBooks.error && browesdBooks.length) {
+          browesdBooks = browesdBooks.map(b => {
+            b.shelf = "none";
+            let bookToBeUpdated = books.filter(book => book.id === b.id)[0];
+            if (bookToBeUpdated) b = bookToBeUpdated;
+            return b;
+          });
+        }
+      //});  
     }
-    this.setState(() => ({ browsedBooks: browsedBooks, query: q }));
-    window.history.replaceState(
-      { browsedBooks: browsedBooks, query: q },
-      "title"
-    );
+    
+     this.setState(() => ({ browesdBooks: browesdBooks, query: q }));
+    // window.history.replaceState(
+    //   { browesdBooks: browesdBooks, query: q },
+    //   "title"
+    // );
   }, 1000);
 
+  componentWillUnmount() {
+    this.props.handleInitialData()
+  }
+
   render() {
-    const { browsedBooks } = this.state;
-    const { moveShelf } = this.props;
+    const { browesdBooks } = this.state;
 
     return (
       <div className='search-books'>
@@ -66,13 +74,13 @@ class BrowsedBooks extends Component {
               type='text'
               placeholder='Search by title or author'
               onChange={event => this.browseBooks(event.target.value)}
-              ref={input => (this.input = input)}
+              // ref={input => (this.input = input)}
             />
           </div>
         </div>
         <div className='search-books-results'>
-          {browsedBooks && browsedBooks.length && !browsedBooks.error ? (
-            <BookShelf books={browsedBooks} moveShelf={moveShelf} />
+          {browesdBooks && browesdBooks.length && !browesdBooks.error ? (
+            <BookShelf books={browesdBooks} />
           ) : (
             <div></div>
           )}
@@ -82,4 +90,15 @@ class BrowsedBooks extends Component {
   }
 }
 
-export default BrowsedBooks;
+const mapStateToProps = ({ books }) => ({
+  books,
+})
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    handleBrowseBooks: (query) => dispatch(handleBrowseBooks(query)),
+    handleInitialData: () => dispatch(handleInitialData())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(browesdBooks)

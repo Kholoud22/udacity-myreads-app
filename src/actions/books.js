@@ -2,10 +2,10 @@ import { GET_BOOKS, GET_BOOK, GET_MY_BOOKS, UPDATE_SHELF } from ".";
 import { showLoading, hideLoading } from "react-redux-loading";
 import { get, update, search } from "../BooksAPI";
 
-export function getBooks(books) {
+export function getBooks(browesdBooks) {
   return {
     type: GET_BOOKS,
-    data: { books }
+    data: { browesdBooks }
   };
 }
 export function getMyBooks(books) {

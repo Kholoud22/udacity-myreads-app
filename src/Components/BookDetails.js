@@ -1,14 +1,13 @@
 import React from "react";
 import Book from "./Book";
-import PropTypes from "prop-types";
 import * as BooksAPI from "../BooksAPI";
 class BookDetails extends React.Component {
   state = {
     book: {}
   };
-  static propTypes = {
-    moveShelf: PropTypes.func.isRequired
-  };
+  // static propTypes = {
+  //   moveShelf: PropTypes.func.isRequired
+  // };
 
   async componentDidMount() {
     let locationArr = window.location.pathname.split("/");
@@ -21,7 +20,7 @@ class BookDetails extends React.Component {
     window.history.back();
   }
   render() {
-    const { moveShelf } = this.props;
+    //const { moveShelf } = this.props;
     const { book } = this.state;
     return (
       <div>
@@ -40,7 +39,7 @@ class BookDetails extends React.Component {
             <div className='book-authors'>{book.description}</div>
           </div>
           <div style={{ marginLeft: 10 }}>
-            <Book canUpdateShelf={false} book={book} moveShelf={moveShelf} />
+            <Book book={book} canUpdateShelf={false} />
             <div style={{ marginRight: 50 }}></div>
           </div>
         </div>
