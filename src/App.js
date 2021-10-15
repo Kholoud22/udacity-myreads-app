@@ -45,12 +45,12 @@ class BooksApp extends Component {
 }
 const mapStateToProps = ({ books }) => ({
   books
-})
+});
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     handleInitialData: () => dispatch(handleInitialData()),
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(BooksApp)
+export default connect(mapStateToProps, mapDispatchToProps)(BooksApp);
